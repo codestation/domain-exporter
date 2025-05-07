@@ -1,0 +1,5 @@
+domains:
+  - domain: example.com
+    expires: 2025-05-30
+  - domain: example.org
+    expires: 2025-01-01

@@ -1,0 +1,30 @@
+steps:
+  lint:
+    image: golangci/golangci-lint:v2.1.5
+    commands:
+      - golangci-lint run -v --timeout 10m
+    environment:
+      GOPROXY:
+        from_secret: goproxy_url
+
+  build:
+    image: woodpeckerci/plugin-docker-buildx:5.2.2
+    settings:
+      repo: registry.megpoid.dev/codestation/domain-exporter
+      tags:
+        - latest
+        - "${CI_COMMIT_TAG}"
+      cache_images: registry.megpoid.dev/codestation/domain-exporter:cache-${CI_COMMIT_BRANCH}
+      registry: registry.megpoid.dev
+      config:
+        from_secret: registry_credentials
+      build_args:
+        CI_COMMIT_TAG: "${CI_COMMIT_TAG}"
+        GOPROXY:
+          from_secret: goproxy_url
+
+when:
+  event:
+    - tag
+  branch:
+    - master
