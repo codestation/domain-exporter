@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -99,6 +100,24 @@ func main() {
 
 	updateMetrics(config)
 
+	var wg sync.WaitGroup
+	done := make(chan struct{})
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ticker := time.NewTicker(1 * time.Hour)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				updateMetrics(config)
+			case <-done:
+				return
+			}
+		}
+	}()
+
 	http.Handle("/metrics", handler)
 
 	server := &http.Server{Addr: *bindAddr}
@@ -116,6 +135,7 @@ func main() {
 	}()
 
 	<-stop
+	close(done)
 	slog.Info("Shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -126,6 +146,8 @@ func main() {
 	} else {
 		slog.Info("Server gracefully stopped")
 	}
+
+	wg.Wait()
 }
 
 // getEnv retrieves the value of the environment variable or returns the fallback value.
