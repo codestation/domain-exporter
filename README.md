@@ -9,8 +9,8 @@
 
 ### Available Flags
 
-- `-address`: Address to bind the HTTP server (default `:8080`).
-- `-config`: Path to the YAML configuration file (default `config.yaml`).
+- `--address`: Address to bind the HTTP server (default `:8080`).
+- `--config-path`: Path to the YAML configuration file (default `config.yaml`).
 
 ### Environment Variables
 
@@ -39,10 +39,10 @@ The exporter exposes the following metrics at `/metrics`:
 ## Example Execution
 
 ```bash
-./domain-exporter -address ":9090" -config "domains.yaml"
+./domain-exporter --address ":8080" --config "domains.yaml"
 ```
 
-Access the metrics at: [http://localhost:9090/metrics](http://localhost:9090/metrics)
+Access the metrics at: [http://localhost:8080/metrics](http://localhost:8080/metrics)
 
 ## Why not use whois to get the expiration date?
 
